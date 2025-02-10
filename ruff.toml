@@ -1,0 +1,5 @@
+line-length = 80
+exclude = ['.git', '__pycache__', '.venv' ,'dist', 'build']
+
+[lint]
+select = ['E', 'W', 'I', 'C90']
