@@ -6,28 +6,26 @@ class UrlRepository:
     def __init__(self, conn):
         self.conn = conn
 
-    def create_table(self):
-        with self.conn.cursor(cursor_factory=DictCursor) as cur:
-            cur.execute(
-                """CREATE TABLE IF NOT EXISTS urls (
-                id BIGINT PRIMARY KEY GENERATED ALWAYS AS IDENTITY,
-                name VARCHAR(255) UNIQUE NOT NULL,
-                created_at DATE DEFAULT CURRENT_DATE
-                )""")
-        self.conn.commit()
-
     def get_content(self):
         with self.conn.cursor(cursor_factory=DictCursor) as cur:
-            cur.execute("SELECT * FROM urls")
+            cur.execute("""SELECT
+                            urls.id,
+                            urls.name,
+                            url_checks.status_code,
+                            MAX(url_checks.created_at) as created_at
+                        FROM urls
+                        LEFT join url_checks on urls.id = url_checks.url_id
+                        GROUP by urls.id, urls.name, url_checks.status_code
+                        ORDER BY urls.id DESC;""")
             return [dict(row) for row in cur]
 
-    def find(self, id):
+    def find_url(self, id):
         with self.conn.cursor(cursor_factory=DictCursor) as cur:
             cur.execute("SELECT * FROM urls WHERE id = %s", (id,))
             row = cur.fetchone()
             return dict(row) if row else None
 
-    def save(self, url):
+    def save_url(self, url):
         with self.conn.cursor() as cur:
             try:
                 cur.execute(
@@ -42,3 +40,27 @@ class UrlRepository:
             except UniqueViolation:
                 self.conn.rollback()
                 return
+
+    def save_check(self, data):
+        with self.conn.cursor() as cur:
+            cur.execute(
+                """INSERT INTO url_checks
+                (url_id, status_code, h1, title, description)
+                VALUES (%s, %s, %s, %s, %s) RETURNING id""",
+                (
+                    data["url_id"],
+                    data["status_code"],
+                    data["h1"],
+                    data["title"],
+                    data["description"],
+                )
+            )
+            self.conn.commit()
+
+    def get_checks(self, url_id):
+        with self.conn.cursor(cursor_factory=DictCursor) as cur:
+            cur.execute(
+                "SELECT * FROM url_checks WHERE url_id = %s ORDER BY id DESC",
+                (int(url_id),)
+                )
+            return [dict(row) for row in cur]

@@ -10,8 +10,8 @@ from flask import (
 )
 
 from page_analyzer.config import DATABASE_URL, SECRET_KEY
+from page_analyzer.parse import seo_analysis, url_parse
 from page_analyzer.repository import UrlRepository
-from page_analyzer.url_parse import url_parse
 from page_analyzer.validator import validate
 
 app = Flask(__name__)
@@ -31,18 +31,16 @@ def index():
 
 @app.post("/urls")
 def posts_url():
-
     data = request.form.to_dict()
-
     if validate(data):
         data["url"] = url_parse(data["url"])
-        if repo.save(data):
+        if repo.save_url(data):
             flash("Страница успешно добавлена", "success")
             return redirect(url_for("get_url", id=data["id"]))
-        flash("Страница уже существует", "info")  # Нужно сменить цвет
+        flash("Страница уже существует", "info")
         return redirect(url_for("index"))
     else:
-        flash("Некорректный URL", "error")
+        flash("Некорректный URL", "danger")
         return redirect(url_for("index"))
 
 
@@ -55,7 +53,26 @@ def get_urls():
 @app.route("/urls/<id>")
 def get_url(id):
     messages = get_flashed_messages(with_categories=True)
-    url = repo.find(id)
+    url = repo.find_url(id)
     if url is None:
         return 'Page not found', 404
-    return render_template('show.html', url=url, messages=messages)
+    url_checks = repo.get_checks(id)
+    return render_template(
+        'show.html',
+        url=url,
+        url_checks=url_checks,
+        messages=messages
+        )
+
+
+@app.post("/urls/<id>/checks")
+def check_url(id):
+    url = repo.find_url(id)
+    data = seo_analysis(url["name"])
+    if data:
+        data["url_id"] = id
+        repo.save_check(data)
+        flash("Страница успешно проверена", "success")
+    else:
+        flash("Произошла ошибка при проверке", "danger")
+    return redirect(url_for('get_url', id=id))

@@ -22,13 +22,13 @@
 
   {% if messages %}
     {% for message in messages %}
-      <div class="alert alert-success" role="alert">{{ message[1] }}</div>
+      <div class="alert alert-{{ message[0] }}" role="alert">{{ message[1] }}</div>
     {% endfor %}
   {% endif %}
 
   <main class="flex-grow-1">
     <div class="container-lg mt-3">
-      <h1>Сайт: https://translate.yandex.ru</h1>
+      <h1>Сайт: {{ url.name }}</h1>
 
     
   <div class="table-responsive">
@@ -51,7 +51,7 @@
   </div>
 
     <h2 class="mt-5 mb-3">Проверки</h2>
-    <form method="post" action="/urls/1/checks">
+    <form method="post" action="/urls/{{ url.id }}/checks">
     <input type="submit" class="btn btn-primary" value="Запустить проверку">
     </form>
     
@@ -67,8 +67,19 @@
         <th>Дата создания</th>
       </tr>
     </thead>
-      <tbody>
-    
+    <tbody>
+
+      {% for check in url_checks %}
+        <tr>
+          <td>{{ check.id }}</td>
+          <td>{{ check.status_code }}</td>
+          <td>{{ check.h1 or '' }}</td>
+          <td>{{ check.title or '' }}</td>
+          <td>{{ check.description or '' }}</td>
+          <td>{{ check.created_at }}</td>
+        </tr>
+      {% endfor %}
+
     </tbody>
     </table>
   </div>
