@@ -20,8 +20,6 @@ app.config['SECRET_KEY'] = SECRET_KEY
 conn = psycopg2.connect(DATABASE_URL)
 repo = UrlRepository(conn)
 
-repo.create_table()
-
 
 @app.route("/")
 def index():
