@@ -1,4 +1,3 @@
-import psycopg2
 from flask import (
     Flask,
     flash,
@@ -16,9 +15,9 @@ from page_analyzer.validator import validate
 
 app = Flask(__name__)
 app.config['SECRET_KEY'] = SECRET_KEY
+app.config['DATABASE_URL'] = DATABASE_URL
 
-conn = psycopg2.connect(DATABASE_URL)
-repo = UrlRepository(conn)
+repo = UrlRepository(app.config['DATABASE_URL'])
 
 
 @app.route("/")
