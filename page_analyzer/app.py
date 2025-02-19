@@ -1,3 +1,6 @@
+import os
+
+from dotenv import load_dotenv
 from flask import (
     Flask,
     flash,
@@ -8,14 +11,14 @@ from flask import (
     url_for,
 )
 
-from page_analyzer.config import DATABASE_URL, SECRET_KEY
 from page_analyzer.parse import seo_analysis, url_parse
 from page_analyzer.repository import UrlRepository
 from page_analyzer.validator import validate
 
+load_dotenv()
 app = Flask(__name__)
-app.config['SECRET_KEY'] = SECRET_KEY
-app.config['DATABASE_URL'] = DATABASE_URL
+app.config['SECRET_KEY'] = os.getenv("SECRET_KEY")
+app.config['DATABASE_URL'] = os.getenv("DATABASE_URL")
 
 repo = UrlRepository(app.config['DATABASE_URL'])
 
