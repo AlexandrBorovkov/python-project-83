@@ -16,7 +16,7 @@ def seo_analysis(url):
     except requests.exceptions.RequestException:
         return
     status_code = response.status_code
-    response.encoding= 'utf-8'
+    response.encoding = 'utf-8'
     soup = BeautifulSoup(response.text, 'lxml')
     h1 = soup.find("h1")
     if h1:
