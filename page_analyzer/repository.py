@@ -24,29 +24,31 @@ class UrlRepository:
                             ORDER BY urls.id DESC;""")
                 return [dict(row) for row in cur]
 
-    def find_url(self, id):
+    def find_by_id(self, id):
         with self.get_connection() as conn:
             with conn.cursor(cursor_factory=DictCursor) as cur:
                 cur.execute("SELECT * FROM urls WHERE id = %s", (id,))
                 row = cur.fetchone()
                 return dict(row) if row else None
 
+    def find_by_name(self, name):
+        with self.get_connection() as conn:
+            with conn.cursor(cursor_factory=DictCursor) as cur:
+                cur.execute("SELECT * FROM urls WHERE name = %s", (name,))
+                row = cur.fetchone()
+                return dict(row) if row else None
+
     def save_url(self, url):
         with self.get_connection() as conn:
             with conn.cursor() as cur:
-                try:
-                    cur.execute(
-                        """INSERT INTO urls (name) VALUES
-                        (%s) RETURNING id""",
-                        (url["url"],)
-                    )
-                    id = cur.fetchone()[0]
-                    url['id'] = id
-                    conn.commit()
-                    return True
-                except UniqueViolation:
-                    conn.rollback()
-                    return
+                cur.execute(
+                    """INSERT INTO urls (name) VALUES
+                    (%s) RETURNING id""",
+                    (url["url"],)
+                )
+                id = cur.fetchone()[0]
+                url['id'] = id
+                conn.commit()
 
     def save_check(self, data):
         with self.get_connection() as conn:

@@ -34,10 +34,12 @@ def posts_url():
     data = request.form.to_dict()
     if validate(data):
         data["url"] = url_parse(data["url"])
-        if repo.save_url(data):
-            flash("Страница успешно добавлена", "success")
-            return redirect(url_for("get_url", id=data["id"]))
-        flash("Страница уже существует", "info")
+        url = repo.find_by_name(data["url"])
+        if url:
+            flash("Страница уже существует", "info")
+            return redirect(url_for("get_url", id=url["id"]))
+        repo.save_url(data)
+        flash("Страница успешно добавлена", "success")
         return redirect(url_for("get_url", id=data["id"]))
     else:
         flash("Некорректный URL", "danger")
@@ -54,7 +56,7 @@ def get_urls():
 @app.route("/urls/<id>")
 def get_url(id):
     messages = get_flashed_messages(with_categories=True)
-    url = repo.find_url(id)
+    url = repo.find_by_id(id)
     if url is None:
         return 'Page not found', 404
     url_checks = repo.get_checks(id)
@@ -68,7 +70,7 @@ def get_url(id):
 
 @app.post("/urls/<id>/checks")
 def check_url(id):
-    url = repo.find_url(id)
+    url = repo.find_by_id(id)
     data = seo_analysis(url["name"])
     if data:
         data["url_id"] = id
