@@ -11,7 +11,7 @@
 
 #### [Link to the web application](https://python-project-83-ke72.onrender.com) ####
 
-This project was built using these tools:
+### This project was built using these tools: ###
 
 | Tool                                                                        | Description                                             |
 |-----------------------------------------------------------------------------|---------------------------------------------------------|
@@ -29,5 +29,33 @@ This project was built using these tools:
 
 ---
 
-## Description: ##
+### Description: ###
 "Page Analyzer is a website that analyzes the specified pages for SEO suitability"
+
+---
+
+### How do I launch the app? ###
+1. **Clone the repository**:
+   ```sh
+   git clone https://github.com/AlexandrBorovkov/python-project-83.git
+   cd python-project-83
+   ```
+2. **Set up environment variables (`.env`)**:
+   ```sh
+   DATABASE_URL=postgresql://user:password@localhost:5432/database
+   SECRET_KEY=your_secret_key
+   ```
+3. **Installing dependencies and creating database tables**:
+   ```sh
+   make build
+   make install
+   ```
+4. **Run the application**:
+   - In **development** (Flask + Debug Mode):
+     ```sh
+     make dev
+     ```
+   - In **production** (Gunicorn + PostgreSQL):
+     ```sh
+     make start
+     ```

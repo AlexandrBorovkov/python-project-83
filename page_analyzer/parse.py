@@ -1,12 +1,5 @@
-from urllib.parse import urlparse
-
 import requests
 from bs4 import BeautifulSoup
-
-
-def url_parse(url):
-    parse_result = urlparse(url)
-    return f"{parse_result.scheme}://{parse_result.netloc}"
 
 
 def seo_analysis(url):

@@ -11,9 +11,9 @@ from flask import (
     url_for,
 )
 
-from page_analyzer.parse import seo_analysis, url_parse
+from page_analyzer.parse import seo_analysis
 from page_analyzer.repository import UrlRepository
-from page_analyzer.validator import validate
+from page_analyzer.utils import normalize_url, validate_url
 
 load_dotenv()
 app = Flask(__name__)
@@ -31,20 +31,20 @@ def index():
 
 @app.post("/urls")
 def posts_url():
-    data = request.form.to_dict()
-    if validate(data):
-        data["url"] = url_parse(data["url"])
-        url = repo.find_by_name(data["url"])
-        if url:
-            flash("Страница уже существует", "info")
-            return redirect(url_for("get_url", id=url["id"]))
-        repo.save_url(data)
-        flash("Страница успешно добавлена", "success")
-        return redirect(url_for("get_url", id=data["id"]))
-    else:
+    url = request.form['url']
+    error_msg = validate_url(url)
+    if error_msg:
         flash("Некорректный URL", "danger")
         messages = get_flashed_messages(with_categories=True)
         return render_template('index.html', messages=messages), 422
+    normalized_url = normalize_url(url)
+    existed_url = repo.find_by_name(normalized_url)
+    if existed_url:
+        flash("Страница уже существует", "info")
+        return redirect(url_for("get_url", id=existed_url["id"]))
+    url_id = repo.save_url(normalized_url)
+    flash("Страница успешно добавлена", "success")
+    return redirect(url_for("get_url", id=url_id))
 
 
 @app.route("/urls")
@@ -53,12 +53,12 @@ def get_urls():
     return render_template("urls.html", urls=urls)
 
 
-@app.route("/urls/<id>")
+@app.route("/urls/<int:id>")
 def get_url(id):
     messages = get_flashed_messages(with_categories=True)
     url = repo.find_by_id(id)
     if url is None:
-        return 'Page not found', 404
+        return render_template('page404.html'), 404
     url_checks = repo.get_checks(id)
     return render_template(
         'show.html',
@@ -68,7 +68,7 @@ def get_url(id):
         )
 
 
-@app.post("/urls/<id>/checks")
+@app.post("/urls/<int:id>/checks")
 def check_url(id):
     url = repo.find_by_id(id)
     data = seo_analysis(url["name"])
@@ -79,3 +79,8 @@ def check_url(id):
     else:
         flash("Произошла ошибка при проверке", "danger")
     return redirect(url_for('get_url', id=id))
+
+
+@app.errorhandler(404)
+def page_not_found(error):
+    return render_template('page404.html'), 404

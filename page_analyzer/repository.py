@@ -43,11 +43,11 @@ class UrlRepository:
                 cur.execute(
                     """INSERT INTO urls (name) VALUES
                     (%s) RETURNING id""",
-                    (url["url"],)
+                    (url,)
                 )
                 id = cur.fetchone()[0]
-                url['id'] = id
                 conn.commit()
+                return id
 
     def save_check(self, data):
         with self.get_connection() as conn:
