@@ -11,7 +11,7 @@
 
 #### [Link to the web application](https://python-project-83-ke72.onrender.com) ####
 
-### This project was built using these tools: ###
+#### This project was built using these tools: ####
 
 | Tool                                                                        | Description                                             |
 |-----------------------------------------------------------------------------|---------------------------------------------------------|
@@ -38,7 +38,10 @@
 1. **Clone the repository**:
    ```sh
    git clone https://github.com/AlexandrBorovkov/python-project-83.git
-   cd python-project-83
+   ```
+   or
+   ```sh
+   git clone git@github.com:AlexandrBorovkov/python-project-83.git
    ```
 2. **Set up environment variables (`.env`)**:
    ```sh
