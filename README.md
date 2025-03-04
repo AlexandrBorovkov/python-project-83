@@ -7,9 +7,14 @@
 
 ---
 
-### Links ###
+### Description: ###
+"A page analyzer is a website that analyzes specified pages for compliance with SEO requirements. Checks the availability of the URL. Analyzes the title and description tags. Displays the verification result in the user interface."
 
-#### [Link to the web application](https://python-project-83-ke72.onrender.com) ####
+#### [Link to the deployed web application](https://python-project-83-ke72.onrender.com) ####
+
+---
+
+### Links ###
 
 #### This project was built using these tools: ####
 
@@ -26,11 +31,6 @@
 | [python-dotenv](https://pypi.org/project/python-dotenv/)                    | "Python-dotenv reads key-value pairs from a .env file and can set them as environment variables"|
 | [validators](https://validators.readthedocs.io/en/latest/)                  | "Python Data Validation"|
 | [ruff](https://docs.astral.sh/ruff/)                                        | "Your tool for style guide enforcement"|
-
----
-
-### Description: ###
-"Page Analyzer is a website that analyzes the specified pages for SEO suitability"
 
 ---
 

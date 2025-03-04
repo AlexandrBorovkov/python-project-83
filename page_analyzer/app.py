@@ -34,7 +34,7 @@ def posts_url():
     url = request.form['url']
     error_msg = validate_url(url)
     if error_msg:
-        flash("Некорректный URL", "danger")
+        flash(error_msg, "danger")
         messages = get_flashed_messages(with_categories=True)
         return render_template('index.html', messages=messages), 422
     normalized_url = normalize_url(url)

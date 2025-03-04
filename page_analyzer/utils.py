@@ -3,10 +3,13 @@ from urllib.parse import urlparse
 import validators
 
 
-def validate_url(url):
-    if validators.url(url):
-        return False
-    return True
+def validate_url(input_url):
+    if not input_url:
+        return "URL обязателен для заполнения"
+    if not validators.url(input_url):
+        return "Некорректный URL"
+    if len(input_url) > 255:
+        return "Введенный URL превышает длину в 255 символов"
 
 
 def normalize_url(url):
